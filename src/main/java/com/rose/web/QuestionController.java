@@ -24,21 +24,22 @@ public class QuestionController {
 		ids.add(new Integer(2));
 		ids.add(new Integer(3));
 		ids.add(new Integer(4));
-		
+		ArrayList<QuestionData>list=new ArrayList<>();
 		for(int i=0;i<ids.size();i++){
 			QuestionData data=repository.findById((Integer)ids.get(i));
-			String dataName="data"+(i+1);
-			mav.addObject(dataName,data);
+			list.add(data);
 		}
+		mav.addObject("data",list);
 		mav.setViewName("index");
 		return mav;
 	}
 
 	@RequestMapping(value="/", method=RequestMethod.POST)
 	public ModelAndView send(
-			@RequestParam("input1")String input1
+			@ModelAttribute("formModel")ArrayList<String> list
 			,ModelAndView mav){
-		mav.addObject("title", input1);
+		
+		mav.addObject("title", list.get(0));
 		mav.setViewName("index");
 		return mav;
 	}

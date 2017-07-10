@@ -19,9 +19,12 @@ public class QuestionData {
 	private String sentence;
 	@Column
 	private String answer;
+
 	
 	public QuestionData(){}
-	public QuestionData(int id, String japanese, String question, String sentence, String answer) {
+
+
+	public QuestionData(Integer id, String japanese, String question, String sentence, String answer) {
 		super();
 		this.id = id;
 		this.japanese = japanese;
@@ -29,35 +32,56 @@ public class QuestionData {
 		this.sentence = sentence;
 		this.answer = answer;
 	}
-	public int getId() {
+
+
+	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
+
+
+	public void setId(Integer id) {
 		this.id = id;
 	}
+
+
 	public String getJapanese() {
 		return japanese;
 	}
+
+
 	public void setJapanese(String japanese) {
 		this.japanese = japanese;
 	}
+
+
 	public String getQuestion() {
 		return question;
 	}
+
+
 	public void setQuestion(String question) {
 		this.question = question;
 	}
+
+
 	public String getSentence() {
 		return sentence;
 	}
+
+
 	public void setSentence(String sentence) {
 		this.sentence = sentence;
 	}
+
+
 	public String getAnswer() {
 		return answer;
 	}
+
+
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
+	
 	
 }
