@@ -16,13 +16,35 @@
 <body>
 <h1 th:text="${title}"></h1>
 <table>
+<form action="/" method="post" th:object="${formModel}">
     <tr><th>番号</th><th>問題</th><th>日本語</th><th>解答欄</th></tr>
-    <tr th:each="obj:${data}">
+    <tr th:each="obj:${data1}">
     	<td th:text="${obj.id}"></td>
         <td th:text="${obj.question}"></td>
         <td th:text="${obj.japanese}"></td>
-        <td><input type="text" action="/" method="post" /></td>
+        <td><input type="text" action="/" method="post" name="input1"/></td>
     </tr>
+    <tr th:each="obj:${data2}">
+    	<td th:text="${obj.id}"></td>
+        <td th:text="${obj.question}"></td>
+        <td th:text="${obj.japanese}"></td>
+        <td><input type="text" action="/" method="post" name="input2"/></td>
+    </tr>
+    <tr th:each="obj:${data3}">
+    	<td th:text="${obj.id}"></td>
+        <td th:text="${obj.question}"></td>
+        <td th:text="${obj.japanese}"></td>
+        <td><input type="text" action="/" method="post" name="input3"/></td>
+    </tr>
+    <tr th:each="obj:${data4}">
+    	<td th:text="${obj.id}"></td>
+        <td th:text="${obj.question}"></td>
+        <td th:text="${obj.japanese}"></td>
+        <td><input type="text" action="/" method="post" name="input4"/></td>
+    </tr>
+    <input type="submit" value="解答を終了する" />
+</form>
 </table>
+	
 </body>
 </html>
