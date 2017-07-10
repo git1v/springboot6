@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title th:text="${title}"></title>
+<style>
+    h1{font-size:18pt;font-weight:bold;color:gray;}
+    body { padding: 13pt; color:gray; margin:5px 25px; }
+    tr{margin:5px;}
+    th{padding:5px; color:white; background:darkgray;}
+    td { padding:5px; 0px; background:#ddd; color:333; }
+    pre{border:solid 3px #ddd;padding: 10px}
+</style>
+ 
+</head>
+<body>
+<h1 th:text="${title}"></h1>
+<table>
+    <tr><th>番号</th><th>問題</th><th>日本語</th><th>解答欄</th></tr>
+    <tr th:each="obj:${data}">
+    	<td th:text="${obj.id}"></td>
+        <td th:text="${obj.question}"></td>
+        <td th:text="${obj.japanese}"></td>
+        <td><input type="text" action="/" method="post" /></td>
+    </tr>
+</table>
+</body>
+</html>
