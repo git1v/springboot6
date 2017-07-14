@@ -18,8 +18,8 @@ public class AnswerLogEntity {
 	private Integer no;
 
 	
-	@Column
-	private Integer student_id; 
+	@Column(name="student_id")
+	private Integer studentid; 
 	
 	@Column
 	private Integer qnum; 
@@ -37,11 +37,11 @@ public class AnswerLogEntity {
 
 
 
-	public AnswerLogEntity(Integer student_id, Integer qnum, Integer log, Integer stage,
+	public AnswerLogEntity(Integer studentid, Integer qnum, Integer log, Integer stage,
 			Timestamp timestamp) {
 		super();
 
-		this.student_id = student_id;
+		this.studentid = studentid;
 		this.qnum = qnum;
 		this.log = log;
 		this.stage = stage;
@@ -50,30 +50,79 @@ public class AnswerLogEntity {
 
 
 
+	public Integer getNo() {
+		return no;
+	}
 
-	public Integer getStudent_id() {
-		return student_id;
+
+
+	public void setNo(Integer no) {
+		this.no = no;
 	}
-	public void setStudent_id(Integer student_id) {
-		this.student_id = student_id;
+
+
+
+	public Integer getStudentid() {
+		return studentid;
 	}
+
+
+
+	public void setStudentid(Integer studentid) {
+		this.studentid = studentid;
+	}
+
+
+
 	public Integer getQnum() {
 		return qnum;
 	}
+
+
+
 	public void setQnum(Integer qnum) {
 		this.qnum = qnum;
 	}
+
+
+
+	public Integer getLog() {
+		return log;
+	}
+
+
+
+	public void setLog(Integer log) {
+		this.log = log;
+	}
+
+
+
 	public Integer getStage() {
 		return stage;
 	}
+
+
+
 	public void setStage(Integer stage) {
 		this.stage = stage;
 	}
+
+
+
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}
+
+
+
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
+
+
+
+
+
 	
 }
