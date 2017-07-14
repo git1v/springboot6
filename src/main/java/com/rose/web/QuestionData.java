@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 @Entity
 @Table(name="qlist")
 public class QuestionData {
@@ -19,20 +21,31 @@ public class QuestionData {
 	private String sentence;
 	@Column
 	private String answer;
+	@Column
+	private Integer stage;
 
 	
 	public QuestionData(){}
 
-
-	public QuestionData(Integer id, String japanese, String question, String sentence, String answer) {
+	@Autowired
+	public QuestionData(Integer id, String japanese, String question, String sentence, String answer, Integer stage) {
 		super();
 		this.id = id;
 		this.japanese = japanese;
 		this.question = question;
 		this.sentence = sentence;
 		this.answer = answer;
+		this.stage = stage;
 	}
 
+
+	public Integer getStage() {
+		return stage;
+	}
+
+	public void setStage(Integer stage) {
+		this.stage = stage;
+	}
 
 	public Integer getId() {
 		return id;
