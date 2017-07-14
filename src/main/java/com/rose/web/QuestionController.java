@@ -1,12 +1,13 @@
 package com.rose.web;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,42 +17,22 @@ import org.springframework.web.servlet.ModelAndView;
 public class QuestionController {
 	@Autowired
 	QuestionRepository repository;
-	
+	@Autowired
 	SelectQuestion selection;
+	@Autowired
+	AnswerLogEntityRepository logRepostitory;
 	final int COUNT_OF_QUESTION=10;
-	ArrayList<Integer> ids;
 	ArrayList<QuestionData>list;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public ModelAndView index(ModelAndView mav){
-		//selection=new SelectQuestion();
 		
-		ids=new ArrayList<>();
 		list=new ArrayList<>();
 		mav.addObject("title", "EnglishPractice");
-		
-ArrayList<Integer> allIds=new ArrayList<>();
-		
-		List<QuestionData> datas=repository.findAll();
-		
-		for(int index=0;index<datas.size();index++){
-			allIds.add(datas.get(index).getId());
-		}
-		System.out.println("----- count of Ids: "+allIds.size());
-		
-		Collections.shuffle(allIds);
-		ArrayList<Integer> selectedIds=new ArrayList<>();
-		for(int cnt=0;cnt<COUNT_OF_QUESTION;cnt++){
-			selectedIds.add(allIds.get(cnt));
-			System.out.print(" : "+allIds.get(cnt));
-		}
-		
-		ids=selectedIds;
-		
-		
-		//ids=selection.select(COUNT_OF_QUESTION);
-		
-		
+			
+		ArrayList<Integer> ids=selection.select(COUNT_OF_QUESTION);
+
+		//ランダムに選ばれた数字をキーとして該当する設問を抜き出す
 		for(int index=0;index<ids.size();index++){
 			QuestionData data=repository.findById((Integer)ids.get(index));
 			String dataName="data"+(index+1);
@@ -65,6 +46,7 @@ ArrayList<Integer> allIds=new ArrayList<>();
 
 	
 	@RequestMapping(value="/", method=RequestMethod.POST)
+	@Transactional(readOnly=false)
 	public ModelAndView send(
 			@RequestParam("input1")String input1,
 			@RequestParam("input2")String input2,
@@ -89,8 +71,11 @@ ArrayList<Integer> allIds=new ArrayList<>();
 			inputList.add(input9);
 			inputList.add(input10);
 
+		int student_no=101;
+		int stage=1;
+		Timestamp timestamp=new Timestamp(System.currentTimeMillis());
 		ArrayList<ResultBean> resultBeans=new ArrayList<>();
-		int cnt=0;
+		int cnt=0, log=0;
 		for(int index=0;index<COUNT_OF_QUESTION;index++){
 			QuestionData data=list.get(index);
 			String input=inputList.get(index);
@@ -98,9 +83,11 @@ ArrayList<Integer> allIds=new ArrayList<>();
 			
 			if(data.getAnswer().equals(input)){
 				result="○";
+				log=1;
 				cnt++;
 			}else{
 				result="×";
+				log=0;
 			}
 			
 			resultBeans.add(new ResultBean(data.getId(),
@@ -110,6 +97,10 @@ ArrayList<Integer> allIds=new ArrayList<>();
 											data.getAnswer(), 
 											input,
 											result));
+			AnswerLogEntity logData
+				=new AnswerLogEntity((Integer)student_no,(Integer)data.getId(), (Integer)log, (Integer)data.getStage(), timestamp );
+			logRepostitory.saveAndFlush(logData);		
+			
 		}
 		System.out.println("cnt= "+cnt);
 		double rate=((double)cnt/(double)COUNT_OF_QUESTION)*100;
