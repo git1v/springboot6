@@ -1,6 +1,5 @@
 package com.rose.web;
 
-import org.springframework.context.annotation.Bean;
 
 
 public class AnswerStatusBean {

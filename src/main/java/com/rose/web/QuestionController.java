@@ -2,8 +2,6 @@ package com.rose.web;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -72,7 +70,7 @@ public class QuestionController {
 			inputList.add(input10);
 
 		int student_no=101;
-		int stage=1;
+
 		Timestamp timestamp=new Timestamp(System.currentTimeMillis());
 		ArrayList<ResultBean> resultBeans=new ArrayList<>();
 		int cnt=0, log=0;

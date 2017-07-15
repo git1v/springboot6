@@ -1,6 +1,5 @@
 package com.rose.web;
 
-import javax.persistence.Column;
 
 public class ResultBean {
 	private Integer id;
