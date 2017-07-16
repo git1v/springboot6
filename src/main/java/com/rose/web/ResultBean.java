@@ -3,6 +3,7 @@ package com.rose.web;
 
 public class ResultBean {
 	private Integer id;
+	private Integer stage;
 	private String japanese;
 	private String question;
 	private String sentence;
@@ -12,10 +13,12 @@ public class ResultBean {
 	
 	
 	public ResultBean(){}
-	public ResultBean(Integer id, String japanese, String question, String sentence, String answer, String input,
-			String result) {
+
+	public ResultBean(Integer id, Integer stage, String japanese, String question, String sentence, String answer,
+			String input, String result) {
 		super();
 		this.id = id;
+		this.stage = stage;
 		this.japanese = japanese;
 		this.question = question;
 		this.sentence = sentence;
@@ -23,12 +26,22 @@ public class ResultBean {
 		this.input = input;
 		this.result = result;
 	}
+
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
+	public Integer getStage() {
+		return stage;
+	}
+
+	public void setStage(Integer stage) {
+		this.stage = stage;
+	}
+
 	public String getJapanese() {
 		return japanese;
 	}

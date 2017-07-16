@@ -16,11 +16,25 @@
 <body>
 <h1 th:text="${title}"></h1>
 <table>
-	<tr><th>全文</th><th>解答</th><th>入力値</th><th>正誤</th></tr>
+	<tr><th>設問番号</th><th>ステージ</th><th>全文</th><th>正解</th><th>入力値</th><th>正誤</th></tr>
 	<tr th:each="obj:${dataList}">
+		<td th:text="${obj.id}"></td>
+		<td th:text="${obj.stage}"></td>
 		<td th:text="${obj.sentence}"></td>
 		<td th:text="${obj.answer}"></td>
 		<td th:text="${obj.input}"></td>
+		<td th:text="${obj.result}"></td>
+	</tr>
+</table>
+<h1 th:text="${pastScoreTitle}"></h1>
+<table>
+	<tr><th>設問番号</th><th>ステージ</th><th>全文</th><th>解答回数</th><th>正答率</th><th>合否</th></tr>
+	<tr th:each="obj:${pastScore}">
+		<td th:text="${obj.qnum}"></td>
+		<td th:text="${obj.stage}"></td>
+		<td th:text="${obj.sentence}"></td>
+		<td th:text="${obj.cnt}"></td>
+		<td th:text="${obj.rate}"></td>
 		<td th:text="${obj.result}"></td>
 	</tr>
 </table>

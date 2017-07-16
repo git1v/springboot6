@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
 public class QuetionType {
-	final double OKNG_CRITERION=(double)0.8;
+	final static double OKNG_CRITERION=(double)0.8;
 	final int COUNT_OK=3;
 	final int COUNT_NG=7;
+	@Autowired
+	ProgressLogEntityRepostitory progressRepository;
 	/*
 	 * note: stageIDListについて
 	 * List<Integer>stageIDList=repository.findIdsBetween(start, end);
@@ -61,23 +64,39 @@ public class QuetionType {
 	}
 	public ArrayList<Integer> getSelectedIds(HashMap<Integer, AnswerStatusBean> done,
 			List<Integer>stageIDList,int COUNT_OF_QUESTION){
+		//ここはテスト ---------------------------------------------------
+		ArrayList<ProgressLogEntity>progressList= (ArrayList<ProgressLogEntity>)progressRepository.findAll();
+		System.out.println("studet_id[@ProgressLogEntity]= "+progressList.get(0).getStudent_id()
+				+" : stage= "+progressList.get(0).getStage());
+		
+		//ここまで ------------------------------------------------------
 		
 		HashMap<String, ArrayList<Integer>>listMap
 			=this.getQuestionTypeList(done,stageIDList,COUNT_OF_QUESTION);
 		
+		ArrayList<Integer> selectedIds=new ArrayList<>();
+		
 		ArrayList<Integer> OKList=listMap.get("OKList");
 		ArrayList<Integer> NGList=listMap.get("NGList");
-		
-		ArrayList<Integer> selectedIds=new ArrayList<>();
 		
 		for(int cnt=0;cnt<COUNT_OK && cnt<OKList.size();cnt++){
 			selectedIds.add(OKList.get(cnt));
 		}
+		
 		for(int cnt=0;cnt<COUNT_NG && cnt<NGList.size();cnt++){
 			selectedIds.add(NGList.get(cnt));
 		}
+		
+		/*
+		 * OK問題やNG問題の組み合わせだけでは規定の設問数に満たない場合、
+		 * ステージ内の全設問の中から足りない分だけ新規に出題
+		 */
+		
+		//全てOK問題となった場合を考慮してバックアップを取っておく
+		List<Integer>backup_stageIDList=new ArrayList<>(stageIDList);
+		
 		if(selectedIds.size() < COUNT_OF_QUESTION){
-			int count_notYet=COUNT_OF_QUESTION-(selectedIds.size() );
+			int count_notYet=COUNT_OF_QUESTION-(selectedIds.size());
 			stageIDList.removeAll(OKList);
 			stageIDList.removeAll(NGList);
 			Collections.shuffle(stageIDList);
@@ -85,6 +104,20 @@ public class QuetionType {
 				selectedIds.add(stageIDList.get(cnt));
 			}
 		}
+		
+		/*
+		 * 全てOK問題となった場合など現状のselectedIdsをステージ内全設問リストから排除
+		 * その後ランダムに足りない分だけ出題
+		 */
+		if(selectedIds.size() < COUNT_OF_QUESTION){
+			int count_notYet=COUNT_OF_QUESTION-(selectedIds.size());
+			backup_stageIDList.removeAll(selectedIds);
+			Collections.shuffle(backup_stageIDList);
+			for(int cnt=0;cnt<count_notYet;cnt++){
+				selectedIds.add(backup_stageIDList.get(cnt));
+			}
+		}
+		
 		System.out.println("selectedIds= "+selectedIds);
 		Collections.shuffle(selectedIds);
 		return selectedIds;
