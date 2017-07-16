@@ -1,7 +1,13 @@
 package com.rose.web;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +25,8 @@ public class QuestionController {
 	SelectQuestion selection;
 	@Autowired
 	AnswerLogEntityRepository logRepostitory;
+	@Autowired
+	AnswerRate answerRate;
 	final int COUNT_OF_QUESTION=10;
 	ArrayList<QuestionData>list;
 	
@@ -26,7 +34,7 @@ public class QuestionController {
 	public ModelAndView index(ModelAndView mav){
 		
 		list=new ArrayList<>();
-		mav.addObject("title", "EnglishPractice");
+		mav.addObject("title", "CELEB EnglishPractice");
 			
 		ArrayList<Integer> ids=selection.select(COUNT_OF_QUESTION);
 
@@ -87,14 +95,9 @@ public class QuestionController {
 				result="×";
 				log=0;
 			}
-			
-			resultBeans.add(new ResultBean(data.getId(),
-											data.getJapanese(),
-											data.getQuestion(),
-											data.getSentence(),
-											data.getAnswer(), 
-											input,
-											result));
+		
+			resultBeans.add(new ResultBean(data.getId(), data.getStage(),data.getJapanese(),data.getQuestion(),	data.getSentence(),
+											data.getAnswer(), input,result));
 			AnswerLogEntity logData
 				=new AnswerLogEntity((Integer)student_no,(Integer)data.getId(), (Integer)log, (Integer)data.getStage(), timestamp );
 			logRepostitory.saveAndFlush(logData);		
@@ -102,11 +105,43 @@ public class QuestionController {
 		}
 		System.out.println("cnt= "+cnt);
 		double rate=((double)cnt/(double)COUNT_OF_QUESTION)*100;
-		String resultTitle="Result: 正答率= "+rate+" %";
+		String resultTitle="正答率= "+rate+" %";
 		mav.addObject("title", resultTitle);
 		mav.addObject("dataList", resultBeans);
+		
+		List<QuestionData> dataList=repository.findAll();
+		HashMap<Integer,QuestionData >allDataMap=new HashMap<>();
+		for(int index=0;index<dataList.size();index++){
+			int key=dataList.get(index).getId();
+			QuestionData value=dataList.get(index);
+			allDataMap.put(key, value);
+		}
+		HashMap<Integer, AnswerStatusBean> done=answerRate.getRateMap(student_no);
+		Set<Integer>keySetDone=done.keySet();
+		List<Integer>listDone=new ArrayList<Integer>(keySetDone);
+		Collections.sort(listDone);
+		Set<PastScoreBean>pastScoreSet=new LinkedHashSet<>();
+		for(int index=0;index<listDone.size();index++){
+			int qnum=done.get(listDone.get(index)).getQnum();
+			String sentenc=allDataMap.get(qnum).getSentence();
+			int stage=allDataMap.get(qnum).getStage();
+			int finalCnt=done.get(listDone.get(index)).getCount();
+			double finalRate=(double)done.get(listDone.get(index)).getRate();
+			String finalResult="";
+			if((double)finalRate>=(double)QuetionType.OKNG_CRITERION){
+				finalResult="○";
+			}else{
+				finalResult="×";
+			}
+			BigDecimal bd = new BigDecimal(finalRate);
+			BigDecimal bd2 = bd.setScale(2, BigDecimal.ROUND_HALF_UP);  //小数第２位
+
+			PastScoreBean pastScoreBean=new PastScoreBean(qnum, stage,sentenc,finalCnt, bd2, finalResult);
+			pastScoreSet.add(pastScoreBean);
+		}
+		mav.addObject("pastScoreTitle","これまでの成績表");
+		mav.addObject("pastScore",pastScoreSet);
 		mav.setViewName("result");
 		return mav;
 	}
 }
-

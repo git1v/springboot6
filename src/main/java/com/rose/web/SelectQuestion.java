@@ -39,14 +39,14 @@ public class SelectQuestion {
 		System.out.println("Total IDList size= "+IDList.size());
 		
 		final int start=1;
-		int end=stageloglist.get(0).getStage();
+		int end=stage;
 		
 //		List<QuestionData>stageData=repository.findByStageBetween(start, end);
 		List<Integer>stageIDList=repository.findIdsBetween(start, end);
 		
 //		List<AnswerLogEntity> anslogList=anslogRepository.findByStudentid((Integer)studentid);
 		List<AnswerLogEntity> anslogList=anslogRepository.findByStudentidAndStage(studentid, start, end);
-		System.out.println("anslogList= "+anslogList.size());
+		System.out.println("anslogList[@SelectQuestion]= "+anslogList.size());
 		
 		if(anslogList.size()!=0 && anslogList !=null){
 			HashMap<Integer, AnswerStatusBean> done=answerRate.getRateMap(anslogList);

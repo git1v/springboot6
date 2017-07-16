@@ -3,6 +3,7 @@ package com.rose.web;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
 public class AnswerRate {
@@ -37,6 +38,21 @@ public class AnswerRate {
 			}
 		}
 		System.out.println("\n既に解答した設問数[@AnswerRate]= "+done.size());
+		return done;
+	}
+	
+	@Autowired
+	StageLogRepository stagelogRepository;
+	@Autowired
+	AnswerLogEntityRepository anslogRepository;
+	public HashMap<Integer, AnswerStatusBean> getRateMap(int studentid){
+		HashMap<Integer, AnswerStatusBean> done=new HashMap<>();
+		List<StageLog>stageloglist=stagelogRepository.findByStudentid((Integer)studentid);
+		int start=1;
+		int end=stageloglist.get(0).getStage();
+		List<AnswerLogEntity> anslogList=anslogRepository.findByStudentidAndStage(studentid, start, end);
+		System.out.println("anslogList[@SelectQuestion]= "+anslogList.size());
+		done=this.getRateMap(anslogList);
 		return done;
 	}
 }
