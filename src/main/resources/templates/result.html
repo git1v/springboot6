@@ -26,6 +26,20 @@
 		<td th:text="${obj.result}"></td>
 	</tr>
 </table>
+
+<h1 th:text="${statusSummaryTitle}"></h1>
+<table>
+	<tr><th>ステージ</th><th>全設問数</th><th>着手済設問数</th><th>合格済設問数</th><th>あと何問</th><th>修了テスト</th></tr>
+	<tr th:each="obj:${statusSummary}">
+		<td th:text="${obj.stage}"></td>
+		<td th:text="${obj.totalQuestionSize}"></td>
+		<td th:text="${obj.doneQuestionSize}"></td>
+		<td th:text="${obj.okQuestionSize}"></td>
+		<td th:text="${obj.restQuestionSize}"></td>
+		<td th:text="${obj.status}"></td>
+	</tr>
+</table>
+
 <h1 th:text="${pastScoreTitle}"></h1>
 <table>
 	<tr><th>設問番号</th><th>ステージ</th><th>全文</th><th>解答回数</th><th>正答率</th><th>合否</th></tr>
@@ -38,5 +52,7 @@
 		<td th:text="${obj.result}"></td>
 	</tr>
 </table>
+
+
 </body>
 </html>

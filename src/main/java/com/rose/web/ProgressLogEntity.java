@@ -17,8 +17,8 @@ public class ProgressLogEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Integer no;
-	@Column
-	private Integer student_id;
+	@Column(name="student_id")
+	private Integer studentno;
 	@Column
 	private Integer stage;
 	@Column
@@ -30,10 +30,10 @@ public class ProgressLogEntity {
 	@Column
 	private Timestamp timestamp;
 	public ProgressLogEntity(){}
-	public ProgressLogEntity(Integer student_id, Integer stage, Integer task, Integer testdone, Integer testresult,
+	public ProgressLogEntity(Integer studentno, Integer stage, Integer task, Integer testdone, Integer testresult,
 			Timestamp timestamp) {
 		super();
-		this.student_id = student_id;
+		this.studentno = studentno;
 		this.stage = stage;
 		this.task = task;
 		this.testdone = testdone;
@@ -46,11 +46,11 @@ public class ProgressLogEntity {
 	public void setNo(Integer no) {
 		this.no = no;
 	}
-	public Integer getStudent_id() {
-		return student_id;
+	public Integer getStudentno() {
+		return studentno;
 	}
-	public void setStudent_id(Integer student_id) {
-		this.student_id = student_id;
+	public void setStudentno(Integer studentno) {
+		this.studentno = studentno;
 	}
 	public Integer getStage() {
 		return stage;

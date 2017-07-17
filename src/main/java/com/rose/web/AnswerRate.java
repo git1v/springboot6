@@ -41,19 +41,25 @@ public class AnswerRate {
 		return done;
 	}
 	
+	//指定したステージ間の正答率を取得
+	public HashMap<Integer, AnswerStatusBean> getRateMap(int studentid, int start, int end){
+		List<AnswerLogEntity> anslogList=anslogRepository.findByStudentidAndStage(studentid, start, end);
+		System.out.println("anslogList[@SelectQuestion]= "+anslogList.size());
+		return this.getRateMap(anslogList);
+	}
+	
+	//現在のステージまでの全設問の正答率を取得
 	@Autowired
 	StageLogRepository stagelogRepository;
 	@Autowired
 	AnswerLogEntityRepository anslogRepository;
 	public HashMap<Integer, AnswerStatusBean> getRateMap(int studentid){
-		HashMap<Integer, AnswerStatusBean> done=new HashMap<>();
-		List<StageLog>stageloglist=stagelogRepository.findByStudentid((Integer)studentid);
 		int start=1;
+		List<StageLog>stageloglist=stagelogRepository.findByStudentid((Integer)studentid);
 		int end=stageloglist.get(0).getStage();
-		List<AnswerLogEntity> anslogList=anslogRepository.findByStudentidAndStage(studentid, start, end);
-		System.out.println("anslogList[@SelectQuestion]= "+anslogList.size());
-		done=this.getRateMap(anslogList);
-		return done;
+		return this.getRateMap(studentid, start, end);
 	}
+	
+
 }
 

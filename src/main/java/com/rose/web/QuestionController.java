@@ -1,7 +1,6 @@
 package com.rose.web;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,9 +23,11 @@ public class QuestionController {
 	@Autowired
 	SelectQuestion selection;
 	@Autowired
-	AnswerLogEntityRepository logRepostitory;
+	RequestCalcuration resultCalcuration;
 	@Autowired
 	AnswerRate answerRate;
+	@Autowired
+	StatusSummary statusSummary;
 	final int COUNT_OF_QUESTION=10;
 	ArrayList<QuestionData>list;
 	
@@ -77,37 +78,17 @@ public class QuestionController {
 			inputList.add(input9);
 			inputList.add(input10);
 
-		int student_no=101;
-
-		Timestamp timestamp=new Timestamp(System.currentTimeMillis());
-		ArrayList<ResultBean> resultBeans=new ArrayList<>();
-		int cnt=0, log=0;
-		for(int index=0;index<COUNT_OF_QUESTION;index++){
-			QuestionData data=list.get(index);
-			String input=inputList.get(index);
-			String result="";
-			
-			if(data.getAnswer().equals(input)){
-				result="○";
-				log=1;
-				cnt++;
-			}else{
-				result="×";
-				log=0;
-			}
+		int studentno=101;
 		
-			resultBeans.add(new ResultBean(data.getId(), data.getStage(),data.getJapanese(),data.getQuestion(),	data.getSentence(),
-											data.getAnswer(), input,result));
-			AnswerLogEntity logData
-				=new AnswerLogEntity((Integer)student_no,(Integer)data.getId(), (Integer)log, (Integer)data.getStage(), timestamp );
-			logRepostitory.saveAndFlush(logData);		
-			
-		}
-		System.out.println("cnt= "+cnt);
-		double rate=((double)cnt/(double)COUNT_OF_QUESTION)*100;
+		//この回の正答率
+		ArrayList<ResultBean> resultBeans=resultCalcuration.getRequestResultBeans(studentno, list, inputList, COUNT_OF_QUESTION);
+		double rate=(double)resultCalcuration.getRate();
 		String resultTitle="正答率= "+rate+" %";
 		mav.addObject("title", resultTitle);
 		mav.addObject("dataList", resultBeans);
+		
+		//成績表の更新
+		statusSummary.checkRate(studentno);
 		
 		List<QuestionData> dataList=repository.findAll();
 		HashMap<Integer,QuestionData >allDataMap=new HashMap<>();
@@ -116,7 +97,9 @@ public class QuestionController {
 			QuestionData value=dataList.get(index);
 			allDataMap.put(key, value);
 		}
-		HashMap<Integer, AnswerStatusBean> done=answerRate.getRateMap(student_no);
+		
+		//これまで着手した各設問の正答率
+		HashMap<Integer, AnswerStatusBean> done=answerRate.getRateMap(studentno);
 		Set<Integer>keySetDone=done.keySet();
 		List<Integer>listDone=new ArrayList<Integer>(keySetDone);
 		Collections.sort(listDone);
@@ -141,6 +124,14 @@ public class QuestionController {
 		}
 		mav.addObject("pastScoreTitle","これまでの成績表");
 		mav.addObject("pastScore",pastScoreSet);
+		
+		
+		//ステージ毎の進捗状況
+		Set<StatusSummaryBean>statusSummaryBeanList=statusSummary.getAllStagesSummary(studentno);
+		mav.addObject("statusSummaryTitle","各ステージの進捗状況");
+		mav.addObject("statusSummary", statusSummaryBeanList);
+		
+		
 		mav.setViewName("result");
 		return mav;
 	}

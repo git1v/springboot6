@@ -12,10 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class QuetionType {
 	final static double OKNG_CRITERION=(double)0.8;
+	final static double STAGE_CRITERION=(double)0.85;
 	final int COUNT_OK=3;
 	final int COUNT_NG=7;
 	@Autowired
-	ProgressLogEntityRepostitory progressRepository;
+	AnswerRate answerRate;
 	/*
 	 * note: stageIDListについて
 	 * List<Integer>stageIDList=repository.findIdsBetween(start, end);
@@ -25,8 +26,7 @@ public class QuetionType {
 	 * 既に解いた各設問において正答率を計算して<qnum, Bean>の形で格納したもの
 	 * see @AnswerRate
 	 */
-	public HashMap<String, ArrayList<Integer>> getQuestionTypeList(HashMap<Integer, AnswerStatusBean> done,
-			List<Integer>stageIDList,int COUNT_OF_QUESTION){
+	public HashMap<String, ArrayList<Integer>> getQuestionTypeList(HashMap<Integer, AnswerStatusBean> done){
 		
 		//基準に応じてOK問題とNG問題に分ける
 		HashMap<Integer, AnswerStatusBean> OKMap=new HashMap<>();
@@ -59,20 +59,20 @@ public class QuetionType {
 		listMap.put("NGList", NGList);
 		
 		return listMap;
-
 		
 	}
+	//studentnoとステージの区間を指定してOK問題とNG問題のListを取得
+	public HashMap<String, ArrayList<Integer>> getQuestionTypeList(int studentno, int start, int end){
+		HashMap<Integer, AnswerStatusBean>done=answerRate.getRateMap(studentno, start, end);
+		return this.getQuestionTypeList(done);
+	}
+	
+
 	public ArrayList<Integer> getSelectedIds(HashMap<Integer, AnswerStatusBean> done,
-			List<Integer>stageIDList,int COUNT_OF_QUESTION){
-		//ここはテスト ---------------------------------------------------
-		ArrayList<ProgressLogEntity>progressList= (ArrayList<ProgressLogEntity>)progressRepository.findAll();
-		System.out.println("studet_id[@ProgressLogEntity]= "+progressList.get(0).getStudent_id()
-				+" : stage= "+progressList.get(0).getStage());
-		
-		//ここまで ------------------------------------------------------
+			List<Integer>stageIDList,int COUNT_OF_QUESTION){		
 		
 		HashMap<String, ArrayList<Integer>>listMap
-			=this.getQuestionTypeList(done,stageIDList,COUNT_OF_QUESTION);
+			=this.getQuestionTypeList(done);
 		
 		ArrayList<Integer> selectedIds=new ArrayList<>();
 		
@@ -97,10 +97,21 @@ public class QuetionType {
 		
 		if(selectedIds.size() < COUNT_OF_QUESTION){
 			int count_notYet=COUNT_OF_QUESTION-(selectedIds.size());
+			System.out.println("count_notYet= "+count_notYet);
 			stageIDList.removeAll(OKList);
 			stageIDList.removeAll(NGList);
 			Collections.shuffle(stageIDList);
-			for(int cnt=0;cnt<count_notYet;cnt++){
+			
+			
+			int addition=0;
+			if(count_notYet>=stageIDList.size()){
+				addition=stageIDList.size();
+			}else{
+				addition=count_notYet;
+			}
+			
+
+			for(int cnt=0; cnt<addition;cnt++){
 				selectedIds.add(stageIDList.get(cnt));
 			}
 		}
